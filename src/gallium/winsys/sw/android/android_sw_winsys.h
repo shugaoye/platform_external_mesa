@@ -26,51 +26,24 @@
  *    Chia-I Wu <olv@lunarg.com>
  */
 
-#ifndef _NATIVE_BUFFER_H_
-#define _NATIVE_BUFFER_H_
+#ifndef ANDROID_SW_WINSYS
+#define ANDROID_SW_WINSYS
 
-#include "pipe/p_compiler.h"
-#include "pipe/p_state.h"
+#include <sys/cdefs.h>
+#include <hardware/gralloc.h>
 
-struct native_display;
-struct android_native_buffer_t;
+__BEGIN_DECLS
 
-enum native_buffer_type {
-   NATIVE_BUFFER_DRM,
-   NATIVE_BUFFER_ANDROID,
+struct sw_winsys;
 
-   NUM_NATIVE_BUFFERS
+struct android_winsys_handle {
+   buffer_handle_t handle;
+   int stride;
 };
 
-struct native_buffer {
-   enum native_buffer_type type;
+struct sw_winsys *
+android_create_sw_winsys(void);
 
-   union {
-      struct {
-         struct pipe_resource templ;
-         unsigned name;   /**< the name of the GEM object */
-         unsigned handle; /**< the handle of the GEM object */
-         unsigned stride;
-      } drm;
+__END_DECLS
 
-      struct android_native_buffer_t *android;
-   } u;
-};
-
-/**
- * Buffer interface of the native display.  It allows native buffers to be
- * imported and exported.
- */
-struct native_display_buffer {
-   struct pipe_resource *(*import_buffer)(struct native_display *ndpy,
-                                          struct native_buffer *buf);
-
-   /**
-    * The resource must be creatred with PIPE_BIND_SHARED.
-    */
-   boolean (*export_buffer)(struct native_display *ndpy,
-                            struct pipe_resource *res,
-                            struct native_buffer *nbuf);
-};
-
-#endif /* _NATIVE_BUFFER_H_ */
+#endif /* ANDROID_SW_WINSYS */

@@ -33,9 +33,9 @@
 #ifdef HAVE_LIBUDEV
 #include <stdio.h>
 #include <libudev.h>
+#endif
 #define DRIVER_MAP_GALLIUM_ONLY
 #include "pci_ids/pci_id_driver_map.h"
-#endif
 
 #include "egl_pipe.h"
 #include "egl_st.h"
@@ -59,6 +59,69 @@ get_st_api(enum st_api_type api)
 
    return stmod->stapi;
 }
+
+#ifndef HAVE_LIBUDEV
+
+#include <xf86drm.h>
+/* for i915 */
+#include <i915_drm.h>
+/* for radeon */
+#include <radeon_drm.h>
+static boolean
+drm_fd_get_pci_id(int fd, int *vendor_id, int *chip_id)
+{
+   drmVersionPtr version;
+
+   *chip_id = -1;
+
+   version = drmGetVersion(fd);
+   if (!version) {
+      _eglLog(_EGL_WARNING, "invalid drm fd");
+      return FALSE;
+   }
+   if (!version->name) {
+      _eglLog(_EGL_WARNING, "unable to determine the driver name");
+      drmFreeVersion(version);
+      return FALSE;
+   }
+
+   if (strcmp(version->name, "i915") == 0) {
+      struct drm_i915_getparam gp;
+      int ret;
+
+      *vendor_id = 0x8086;
+
+      memset(&gp, 0, sizeof(gp));
+      gp.param = I915_PARAM_CHIPSET_ID;
+      gp.value = chip_id;
+      ret = drmCommandWriteRead(fd, DRM_I915_GETPARAM, &gp, sizeof(gp));
+      if (ret) {
+         _eglLog(_EGL_WARNING, "failed to get param for i915");
+	 *chip_id = -1;
+      }
+   }
+   else if (strcmp(version->name, "radeon") == 0) {
+      struct drm_radeon_info info;
+      int ret;
+
+      *vendor_id = 0x1002;
+
+      memset(&info, 0, sizeof(info));
+      info.request = RADEON_INFO_DEVICE_ID;
+      info.value = (long) chip_id;
+      ret = drmCommandWriteRead(fd, DRM_RADEON_INFO, &info, sizeof(info));
+      if (ret) {
+         _eglLog(_EGL_WARNING, "failed to get info for radeon");
+	 *chip_id = -1;
+      }
+   }
+
+   drmFreeVersion(version);
+
+   return (*chip_id >= 0);
+}
+
+#endif /* HAVE_LIBUDEV */
 
 static const char *
 drm_fd_get_screen_name(int fd)
@@ -115,6 +178,33 @@ out:
    udev_unref(udev);
 
    if (idx >= 0) {
+      _eglLog((driver_map[idx].driver) ? _EGL_INFO : _EGL_WARNING,
+            "pci id for fd %d: %04x:%04x, driver %s",
+            fd, vendor_id, chip_id, driver_map[idx].driver);
+
+      return driver_map[idx].driver;
+   }
+#else
+   int vendor_id, chip_id;
+
+   if (drm_fd_get_pci_id(fd, &vendor_id, &chip_id)) {
+      int idx, i;
+
+      for (idx = 0; driver_map[idx].driver; idx++) {
+         if (vendor_id != driver_map[idx].vendor_id)
+            continue;
+
+         if (driver_map[idx].num_chips_ids == -1)
+            break;
+
+         for (i = 0; i < driver_map[idx].num_chips_ids; i++) {
+            if (driver_map[idx].chip_ids[i] == chip_id)
+               break;
+         }
+         if (i < driver_map[idx].num_chips_ids)
+            break;
+      }
+
       _eglLog((driver_map[idx].driver) ? _EGL_INFO : _EGL_WARNING,
             "pci id for fd %d: %04x:%04x, driver %s",
             fd, vendor_id, chip_id, driver_map[idx].driver);
