@@ -89,6 +89,10 @@ _eglBuiltInDriverGALLIUM(const char *args);
 
 
 extern _EGLDriver *
+_eglBuiltInDriverANDROID(const char *args);
+
+
+extern _EGLDriver *
 _eglBuiltInDriverDRI2(const char *args);
 
 
