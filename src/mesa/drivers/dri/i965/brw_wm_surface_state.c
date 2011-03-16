@@ -121,6 +121,7 @@ brw_format_for_mesa_format(gl_format mesa_format)
       [MESA_FORMAT_SIGNED_RED_RGTC1] = BRW_SURFACEFORMAT_BC4_SNORM,
       [MESA_FORMAT_RG_RGTC2] = BRW_SURFACEFORMAT_BC5_UNORM,
       [MESA_FORMAT_SIGNED_RG_RGTC2] = BRW_SURFACEFORMAT_BC5_SNORM,
+      [MESA_FORMAT_RGBA8888_REV] = BRW_SURFACEFORMAT_R8G8B8A8_UNORM,
    };
    assert(mesa_format < MESA_FORMAT_COUNT);
    return table[mesa_format];
