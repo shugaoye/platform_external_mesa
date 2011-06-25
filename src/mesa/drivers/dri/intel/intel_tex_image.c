@@ -304,18 +304,20 @@ intel_tex_image_s8z24_scattergather(struct intel_context *intel,
    intel_renderbuffer_map(intel, stencil_rb);
 
    if (scatter) {
-      for (int y = 0; y < h; ++y) {
+      int x, y;
+      for (y = 0; y < h; ++y) {
 	 depth_rb->GetRow(ctx, depth_rb, w, 0, y, depth_row);
-	 for (int x = 0; x < w; ++x) {
+	 for (x = 0; x < w; ++x) {
 	    stencil_row[x] = depth_row[x] >> 24;
 	 }
 	 stencil_rb->PutRow(ctx, stencil_rb, w, 0, y, stencil_row, NULL);
       }
    } else { /* gather */
-      for (int y = 0; y < h; ++y) {
+      int x, y;
+      for (y = 0; y < h; ++y) {
 	 depth_rb->GetRow(ctx, depth_rb, w, 0, y, depth_row);
 	 stencil_rb->GetRow(ctx, stencil_rb, w, 0, y, stencil_row);
-	 for (int x = 0; x < w; ++x) {
+	 for (x = 0; x < w; ++x) {
 	    uint32_t s8_x24 = stencil_row[x] << 24;
 	    uint32_t x8_z24 = depth_row[x] & 0x00ffffff;
 	    depth_row[x] = s8_x24 | x8_z24;

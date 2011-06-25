@@ -1527,12 +1527,15 @@ intel_verify_dri2_has_hiz(struct intel_context *intel,
 
 	 /* 5. Assign the DRI buffer's DRM region to the its renderbuffers. */
 	 __DRIbuffer *depth_stencil_buffer = NULL;
-	 for (int i = 0; i < *count; ++i) {
+         {
+            int i;
+	 for (i = 0; i < *count; ++i) {
 	    if ((*buffers)[i].attachment == __DRI_BUFFER_DEPTH_STENCIL) {
 	       depth_stencil_buffer = &(*buffers)[i];
 	       break;
 	    }
 	 }
+         }
 	 struct intel_region *region =
 	    intel_region_alloc_for_handle(intel->intelScreen,
 					  depth_stencil_buffer->cpp,

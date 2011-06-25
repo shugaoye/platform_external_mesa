@@ -993,7 +993,9 @@ decode_3d_1d(uint32_t *data, int count,
 				break;
 			case 2:
 				instr_out(data, hw_offset, i, "S2: texcoord formats: ");
-				for (int tex_num = 0; tex_num < 8; tex_num++) {
+                                {
+                                   int tex_num;
+				for (tex_num = 0; tex_num < 8; tex_num++) {
 					switch((data[i]>>tex_num*4)&0xf) {
 					case 0: fprintf(out, "%i=2D ", tex_num); break;
 					case 1: fprintf(out, "%i=3D ", tex_num); break;
@@ -1004,6 +1006,7 @@ decode_3d_1d(uint32_t *data, int count,
 					case 0xf: fprintf(out, "%i=NP ", tex_num); break;
 					}
 				}
+                                }
 				fprintf(out, "\n");
 
 				break;
