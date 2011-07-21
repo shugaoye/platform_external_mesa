@@ -28,25 +28,11 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES := \
-	egl-static/egl.c \
-	egl-static/egl_pipe.c \
-	egl-static/egl_st.c
+LOCAL_SRC_FILES :=
+LOCAL_CFLAGS :=
+LOCAL_C_INCLUDES :=
 
-LOCAL_CFLAGS := \
-	-DFEATURE_ES1=1 \
-	-DFEATURE_ES2=1 \
-	-D_EGL_MAIN=_eglBuiltInDriverGALLIUM
-
-LOCAL_C_INCLUDES := \
-	$(GALLIUM_TOP)/state_trackers/vega \
-	$(GALLIUM_TOP)/state_trackers/egl \
-	$(MESA_TOP)/src/egl/main \
-	$(MESA_TOP)/src/mesa \
-	$(DRM_TOP)/include/drm \
-	$(DRM_TOP)
-
-LOCAL_STATIC_LIBRARIES := libmesa_gallium
+LOCAL_STATIC_LIBRARIES :=
 LOCAL_WHOLE_STATIC_LIBRARIES := libmesa_egl
 
 LOCAL_SHARED_LIBRARIES := \
@@ -56,36 +42,54 @@ LOCAL_SHARED_LIBRARIES := \
 	liblog \
 	libcutils
 
-gallium_STATE_TRACKERS := \
-	libmesa_st_egl \
-	libmesa_st_mesa \
-	libmesa_glsl
-gallium_DRIVERS :=
-
 ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
-gallium_STATE_TRACKERS += libmesa_classic_egl
+LOCAL_STATIC_LIBRARIES += libmesa_classic_egl
 LOCAL_SHARED_LIBRARIES += libdrm
 endif
 
-ifeq ($(strip $(MESA_BUILD_I915G)),true)
+ifeq ($(strip $(MESA_BUILD_GALLIUM)),true)
+
+LOCAL_SRC_FILES += \
+	egl-static/egl.c \
+	egl-static/egl_pipe.c \
+	egl-static/egl_st.c
+
+LOCAL_CFLAGS += \
+	-DFEATURE_ES1=1 \
+	-DFEATURE_ES2=1 \
+	-D_EGL_MAIN=_eglBuiltInDriverGALLIUM
+
+LOCAL_C_INCLUDES += \
+	$(GALLIUM_TOP)/state_trackers/vega \
+	$(GALLIUM_TOP)/state_trackers/egl \
+	$(MESA_TOP)/src/egl/main \
+	$(MESA_TOP)/src/mesa \
+	$(DRM_TOP)/include/drm \
+	$(DRM_TOP)
+
+LOCAL_STATIC_LIBRARIES += libmesa_gallium
+
+gallium_DRIVERS :=
+
+ifneq ($(filter i915g, $(MESA_GPU_DRIVERS)),)
 gallium_DRIVERS += libmesa_pipe_i915 libmesa_winsys_i915
 LOCAL_CFLAGS += -D_EGL_PIPE_I915=1
 LOCAL_SHARED_LIBRARIES += libdrm libdrm_intel
 endif
 
-ifeq ($(strip $(MESA_BUILD_R300G)),true)
+ifneq ($(filter r300g, $(MESA_GPU_DRIVERS)),)
 gallium_DRIVERS += libmesa_pipe_r300 libmesa_winsys_r300 libmesa_r300compiler
 LOCAL_CFLAGS += -D_EGL_PIPE_R300=1
 LOCAL_SHARED_LIBRARIES += libdrm
 endif
 
-ifeq ($(strip $(MESA_BUILD_R600G)),true)
+ifneq ($(filter r600g, $(MESA_GPU_DRIVERS)),)
 gallium_DRIVERS += libmesa_pipe_r600 libmesa_winsys_r600
 LOCAL_CFLAGS += -D_EGL_PIPE_R600=1
 LOCAL_SHARED_LIBRARIES += libdrm libdrm_radeon
 endif
 
-ifeq ($(strip $(MESA_BUILD_NOUVEAU)),true)
+ifneq ($(filter nouveau, $(MESA_GPU_DRIVERS)),)
 gallium_DRIVERS += \
 	libmesa_winsys_nouveau \
 	libmesa_pipe_nvfx \
@@ -96,16 +100,15 @@ LOCAL_CFLAGS += -D_EGL_PIPE_NOUVEAU=1
 LOCAL_SHARED_LIBRARIES += libdrm libdrm_nouveau
 endif
 
-ifeq ($(strip $(MESA_BUILD_VMWGFX)),true)
+ifneq ($(filter vmwgfx, $(MESA_GPU_DRIVERS)),)
 gallium_DRIVERS += libmesa_pipe_svga libmesa_winsys_svga
 LOCAL_CFLAGS += -D_EGL_PIPE_VMWGFX=1
 LOCAL_SHARED_LIBRARIES += libdrm
 endif
 
-ifeq ($(strip $(MESA_BUILD_SWRAST)),true)
+# swrast
 gallium_DRIVERS += libmesa_pipe_softpipe libmesa_winsys_sw
 LOCAL_CFLAGS += -DGALLIUM_SOFTPIPE
-
 ifneq ($(strip $(GALLIUM_LLVM_VERSION)),)
 gallium_DRIVERS += libmesa_pipe_llvmpipe
 LOCAL_CFLAGS += -DGALLIUM_LLVMPIPE
@@ -124,14 +127,16 @@ LOCAL_STATIC_LIBRARIES += \
 	libLLVMCore libLLVMSupport libLLVMSystem
 endif # GALLIUM_LLVM_VERSION
 
-endif # MESA_BUILD_SWRAST
-
 LOCAL_STATIC_LIBRARIES := \
-	$(gallium_STATE_TRACKERS) \
-	$(gallium_DRIVERS) \
+	libmesa_st_egl \
 	libmesa_st_mesa \
+	libmesa_glsl \
+	libmesa_st_mesa \
+	$(gallium_DRIVERS) \
 	$(LOCAL_STATIC_LIBRARIES)
-	
+
+endif # MESA_BUILD_GALLIUM
+
 LOCAL_MODULE := libGLES_mesa
 LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/egl
 

@@ -232,7 +232,7 @@ common_SHARED_LIBRARIES := \
 
 common_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/dri
 
-ifeq ($(strip $(MESA_BUILD_I915C)),true)
+ifneq ($(filter i915c, $(MESA_GPU_DRIVERS)),)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
@@ -260,9 +260,9 @@ LOCAL_MODULE_PATH := $(common_MODULE_PATH)
 
 include $(MESA_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)
-endif # MESA_BUILD_I915C
+endif # i915c
 
-ifeq ($(strip $(MESA_BUILD_I965C)),true)
+ifneq ($(filter i965c, $(MESA_GPU_DRIVERS)),)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
@@ -290,4 +290,4 @@ LOCAL_MODULE_PATH := $(common_MODULE_PATH)
 
 include $(MESA_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)
-endif # MESA_BUILD_I965C
+endif # i965c

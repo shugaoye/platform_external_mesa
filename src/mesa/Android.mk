@@ -30,7 +30,7 @@ SUBDIRS :=
 ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
 SUBDIRS += $(LOCAL_PATH)/drivers/Android.mk
 endif
-ifeq ($(strip $(MESA_BUILD_R300G)),true)
+ifneq ($(filter r300g, $(MESA_GPU_DRIVERS)),)
 SUBDIRS += $(LOCAL_PATH)/drivers/dri/r300/compiler/Android.mk
 endif
 
@@ -39,10 +39,6 @@ include $(LOCAL_PATH)/sources.mak
 common_CFLAGS := \
 	-DFEATURE_ES1=1 \
 	-DFEATURE_ES2=1
-
-ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
-common_CFLAGS += -DFEATURE_GL=1
-endif
 
 common_C_INCLUDES := \
 	$(MESA_TOP)/src/mapi \
@@ -57,7 +53,6 @@ LOCAL_SRC_FILES := \
 	$(X86_SOURCES)
 
 LOCAL_CFLAGS := $(common_CFLAGS)
-LOCAL_CPPFLAGS := $(common_CPPFLAGS)
 
 LOCAL_C_INCLUDES := \
 	$(common_C_INCLUDES) \
@@ -79,8 +74,7 @@ LOCAL_SRC_FILES := \
 	$(MESA_CXX_SOURCES) \
 	$(X86_SOURCES)
 
-LOCAL_CFLAGS := $(common_CFLAGS)
-LOCAL_CPPFLAGS := $(common_CPPFLAGS)
+LOCAL_CFLAGS := $(common_CFLAGS) -DFEATURE_GL=1
 LOCAL_C_INCLUDES := $(common_C_INCLUDES)
 
 LOCAL_MODULE := libmesa_classic_mesa

@@ -22,28 +22,28 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# Either one of, or both of, MESA_BUILD_CLASSIC and MESA_BUILD_GALLIUM must be
-# set.  When MESA_BUILD_GALLIUM is not set, EGL consists of
+# BOARD_GPU_DRIVERS should be defined.  The valid values are
 #
+#   classic drivers: i915c, i965c
+#   gallium drivers: i915g, r300g, r600g, nouveau, vmwgfx
+#
+# The main target is libGLES_mesa.  Classic drivers depend on
+#
+#   libmesa_egl
 #   libmesa_classic_egl
+#
+# Gallium drivers depend on
+#
 #   libmesa_egl
-#
-# and the rules for it can be found in src/egl/drivers/android/Android.mk.
-#
-# When MESA_BUILD_GALLIUM is set, EGL consists of
-#
 #   libmesa_st_egl
-#   libmesa_egl
 #   libmesa_st_mesa
 #   libmesa_pipe_<DRIVER>
 #   libmesa_winsys_<DRIVER>
 #   libmesa_gallium
-#   <plus libmesa_classic_egl if MESA_BUILD_CLASSIC is also set>
 #
-# and the rules for it can be found in src/gallium/targets/Android.mk
+# The rules can be found in src/gallium/targets/Android.mk.
 #
-# When MESA_BUILD_CLASSIC is set, DRI drivers are created.  A DRI driver
-# consists of
+# For each classic driver enabled, a DRI module will be built.  It consits of
 #
 #   libmesa_classic_mesa
 #   libmesa_glsl
@@ -64,75 +64,57 @@ SUBDIRS := \
 	$(LOCAL_PATH)/src/egl/Android.mk \
 	$(LOCAL_PATH)/src/gallium/Android.mk
 
-# DRI drivers
-MESA_BUILD_CLASSIC := false
-MESA_BUILD_I915C := false
-MESA_BUILD_I965C := false
+MESA_GPU_DRIVERS := $(BOARD_GPU_DRIVERS)
 
-# Gallium drivers
-MESA_BUILD_GALLIUM := false
-MESA_BUILD_I915G := false
-MESA_BUILD_R300G := false
-MESA_BUILD_R600G := false
-MESA_BUILD_NOUVEAU := false
-MESA_BUILD_VMWGFX := false
-MESA_BUILD_SWRAST := false
-
-MESA_DO_BUILD := false
-
+# convert board uses to MESA_GPU_DRIVERS
+ifeq ($(strip $(MESA_GPU_DRIVERS)),)
 ifeq ($(strip $(BOARD_USES_I915C)),true)
-MESA_BUILD_CLASSIC := true
-MESA_BUILD_I915C := true
-
-MESA_DO_BUILD := true
+MESA_GPU_DRIVERS += i915c
 endif
-
-ifeq ($(strip $(BOARD_USES_I915G)),true)
-MESA_BUILD_GALLIUM := true
-MESA_BUILD_I915G := true
-MESA_BUILD_SWRAST := true
-
-MESA_DO_BUILD := true
-endif
-
 ifeq ($(strip $(BOARD_USES_I965C)),true)
-MESA_BUILD_CLASSIC := true
-MESA_BUILD_I965C := true
-
-MESA_DO_BUILD := true
+MESA_GPU_DRIVERS += i965c
 endif
-
+ifeq ($(strip $(BOARD_USES_I915G)),true)
+MESA_GPU_DRIVERS += i915g
+endif
 ifeq ($(strip $(BOARD_USES_R300G)),true)
-MESA_BUILD_GALLIUM := true
-MESA_BUILD_R300G := true
-MESA_BUILD_SWRAST := true
-
-MESA_DO_BUILD := true
+MESA_GPU_DRIVERS += r300g
 endif
-
 ifeq ($(strip $(BOARD_USES_R600G)),true)
-MESA_BUILD_GALLIUM := true
-MESA_BUILD_R600G := true
-MESA_BUILD_SWRAST := true
-
-MESA_DO_BUILD := true
+MESA_GPU_DRIVERS += r600g
 endif
-
 ifeq ($(strip $(BOARD_USES_NOUVEAU)),true)
-MESA_BUILD_GALLIUM := true
-MESA_BUILD_NOUVEAU := true
-MESA_BUILD_SWRAST := true
-
-MESA_DO_BUILD := true
+MESA_GPU_DRIVERS += nouveau
 endif
-
 ifeq ($(strip $(BOARD_USES_VMWGFX)),true)
-MESA_BUILD_GALLIUM := true
-MESA_BUILD_SWRAST := true
+MESA_GPU_DRIVERS += vmwgfx
+endif
+endif # MESA_GPU_DRIVERS
 
-MESA_DO_BUILD := true
+classic_drivers := i915c i965c
+gallium_drivers := i915g r300g r600g nouveau vmwgfx
+
+# warn about invalid drivers
+invalid_drivers := $(filter-out \
+	$(classic_drivers) $(gallium_drivers), $(MESA_GPU_DRIVERS))
+ifneq ($(invalid_drivers),)
+$(warning invalid GPU drivers: $(invalid_drivers))
+# tidy up
+MESA_GPU_DRIVERS := $(filter-out $(invalid_drivers), $(MESA_GPU_DRIVERS))
 endif
 
-ifeq ($(strip $(MESA_DO_BUILD)),true)
+ifneq ($(filter $(classic_drivers), $(MESA_GPU_DRIVERS)),)
+MESA_BUILD_CLASSIC := true
+else
+MESA_BUILD_CLASSIC := false
+endif
+
+ifneq ($(filter $(gallium_drivers), $(MESA_GPU_DRIVERS)),)
+MESA_BUILD_GALLIUM := true
+else
+MESA_BUILD_GALLIUM := false
+endif
+
+ifneq ($(strip $(MESA_GPU_DRIVERS)),)
 include $(SUBDIRS)
 endif

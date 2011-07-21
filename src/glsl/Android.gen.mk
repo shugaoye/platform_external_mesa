@@ -16,7 +16,7 @@ endif
 
 LOCAL_SRC_FILES := $(filter-out $(sources), $(LOCAL_SRC_FILES))
 
-LOCAL_C_INCLUDES += $(intermediates) $(intermediates)/glcpp external/mesa/src/glsl/glcpp
+LOCAL_C_INCLUDES += $(intermediates) $(intermediates)/glcpp $(MESA_TOP)/src/glsl/glcpp
 
 sources := $(addprefix $(intermediates)/, $(sources))
 LOCAL_GENERATED_SOURCES += $(sources)

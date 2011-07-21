@@ -24,8 +24,6 @@
 
 # src/gallium/Android.mk
 
-ifeq ($(strip $(MESA_BUILD_GALLIUM)),true)
-
 LOCAL_PATH := $(call my-dir)
 
 GALLIUM_TOP := $(LOCAL_PATH)
@@ -36,36 +34,32 @@ GALLIUM_TEMPLATE := $(LOCAL_PATH)/Android.template.mk
 #GALLIUM_LLVM_TEMPLATE := external/llvm/Android.template.mk
 #GALLIUM_LLVM_VERSION := 0x0207
 
-SUBDIRS := targets state_trackers auxiliary
+SUBDIRS := targets
 
-ifeq ($(strip $(MESA_BUILD_I915G)),true)
-SUBDIRS += winsys/i915 drivers/i915
-endif
-
-ifeq ($(strip $(MESA_BUILD_R300G)),true)
-SUBDIRS += winsys/radeon drivers/r300
-endif
-
-ifeq ($(strip $(MESA_BUILD_R600G)),true)
-SUBDIRS += winsys/r600 drivers/r600
-endif
-
-ifeq ($(strip $(MESA_BUILD_NOUVEAU)),true)
-SUBDIRS += winsys/nouveau drivers/nouveau drivers/nvfx drivers/nv50 drivers/nvc0
-endif
-
-ifeq ($(strip $(MESA_BUILD_VMWGFX)),true)
-SUBDIRS += winsys/svga drivers/svga
-endif
-
-ifeq ($(strip $(MESA_BUILD_SWRAST)),true)
+ifeq ($(strip $(MESA_BUILD_GALLIUM)),true)
+SUBDIRS += state_trackers auxiliary
+# swrast
 SUBDIRS += winsys/sw drivers/softpipe
 ifneq ($(strip $(GALLIUM_LLVM_VERSION)),)
 SUBDIRS += drivers/llvmpipe
 endif
+endif # MESA_BUILD_GALLIUM
+
+ifneq ($(filter i915g, $(MESA_GPU_DRIVERS)),)
+SUBDIRS += winsys/i915 drivers/i915
+endif
+ifneq ($(filter r300g, $(MESA_GPU_DRIVERS)),)
+SUBDIRS += winsys/radeon drivers/r300
+endif
+ifneq ($(filter r600g, $(MESA_GPU_DRIVERS)),)
+SUBDIRS += winsys/r600 drivers/r600
+endif
+ifneq ($(filter nouveau, $(MESA_GPU_DRIVERS)),)
+SUBDIRS += winsys/nouveau drivers/nouveau drivers/nvfx drivers/nv50 drivers/nvc0
+endif
+ifneq ($(filter vmwgfx, $(MESA_GPU_DRIVERS)),)
+SUBDIRS += winsys/svga drivers/svga
 endif
 
 mkfiles := $(patsubst %,$(LOCAL_PATH)/%/Android.mk,$(SUBDIRS))
 include $(mkfiles)
-
-endif # MESA_BUILD_GALLIUM

@@ -26,8 +26,6 @@
 
 LOCAL_PATH := $(call my-dir)
 
-include $(CLEAR_VARS)
-
 # from main/Makefile
 SOURCES = \
 	eglapi.c \
@@ -47,6 +45,8 @@ SOURCES = \
 	eglstring.c \
 	eglsurface.c \
 	eglsync.c
+
+include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
 	$(addprefix main/, $(SOURCES))
@@ -91,41 +91,11 @@ LOCAL_C_INCLUDES := \
 # for PCI ID to DRI driver mappings
 LOCAL_C_INCLUDES += \
 	$(MESA_TOP)/src/mesa/drivers  \
-	external/mesa/src/gallium/include \
-	external/mesa/src/gallium/winsys
+	$(MESA_TOP)/src/gallium/include \
+	$(MESA_TOP)/src/gallium/winsys
 
 LOCAL_MODULE := libmesa_classic_egl
 
 include $(MESA_COMMON_MK)
 include $(BUILD_STATIC_LIBRARY)
-
-# build libGLES if gallium is not enabled
-ifneq ($(strip $(MESA_BUILD_GALLIUM)),true)
-include $(CLEAR_VARS)
-
-LOCAL_SRC_FILES :=
-LOCAL_CFLAGS :=
-LOCAL_C_INCLUDES :=
-
-LOCAL_STATIC_LIBRARIES :=
-
-LOCAL_WHOLE_STATIC_LIBRARIES := \
-	libmesa_classic_egl \
-	libmesa_egl
-
-LOCAL_SHARED_LIBRARIES := \
-	libglapi \
-	libdrm \
-	libdl \
-	libhardware \
-	liblog \
-	libcutils
-
-LOCAL_MODULE := libGLES_mesa
-LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/egl
-
-include $(MESA_COMMON_MK)
-include $(BUILD_SHARED_LIBRARY)
-endif # MESA_BUILD_GALLIUM
-
 endif # MESA_BUILD_CLASSIC
