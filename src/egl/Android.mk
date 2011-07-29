@@ -57,7 +57,7 @@ LOCAL_CFLAGS := \
 	-D_EGL_OS_UNIX=1
 
 ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
-LOCAL_CFLAGS += -D_EGL_BUILT_IN_DRIVER_ANDROID
+LOCAL_CFLAGS += -D_EGL_BUILT_IN_DRIVER_DRI2
 endif
 ifeq ($(strip $(MESA_BUILD_GALLIUM)),true)
 LOCAL_CFLAGS += -D_EGL_BUILT_IN_DRIVER_GALLIUM
@@ -72,14 +72,14 @@ ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-	drivers/android/egl_android.c \
-	drivers/android/droid.c \
-	drivers/android/droid_core.c \
-	drivers/android/droid_image.c
+	drivers/dri2/egl_dri2.c \
+	drivers/dri2/platform_android.c
 
 LOCAL_CFLAGS := \
-	-D_EGL_MAIN=_eglBuiltInDriverANDROID \
-	-DDEFAULT_DRIVER_DIR=\"/system/lib/dri\"
+	-D_EGL_MAIN=_eglBuiltInDriverDRI2 \
+	-DDEFAULT_DRIVER_DIR=\"/system/lib/dri\" \
+	-DHAVE_SHARED_GLAPI \
+	-DHAVE_ANDROID_PLATFORM
 
 LOCAL_C_INCLUDES := \
 	$(MESA_TOP)/src/mapi \
@@ -87,12 +87,6 @@ LOCAL_C_INCLUDES := \
 	$(DRM_GRALLOC_TOP) \
 	$(DRM_TOP) \
 	$(DRM_TOP)/include/drm
-
-# for PCI ID to DRI driver mappings
-LOCAL_C_INCLUDES += \
-	$(MESA_TOP)/src/mesa/drivers  \
-	$(MESA_TOP)/src/gallium/include \
-	$(MESA_TOP)/src/gallium/winsys
 
 LOCAL_MODULE := libmesa_classic_egl
 
