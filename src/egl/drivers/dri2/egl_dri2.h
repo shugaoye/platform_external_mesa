@@ -48,6 +48,14 @@
 #include <gbm_driint.h>
 #endif
 
+#ifdef HAVE_ANDROID_PLATFORM
+#define LOG_TAG "MESA-EGL"
+#include <ui/egl/android_natives.h>
+#include <ui/android_native_buffer.h>
+#include <hardware/hardware.h>
+#include <cutils/log.h>
+#endif
+
 #include "eglconfig.h"
 #include "eglcontext.h"
 #include "egldisplay.h"
@@ -163,6 +171,13 @@ struct dri2_egl_surface
    __DRIbuffer           *pending_buffer;
    EGLBoolean             block_swap_buffers;
 #endif
+
+#ifdef HAVE_ANDROID_PLATFORM
+   android_native_window_t *window;
+   android_native_buffer_t *buffer;
+
+   __DRIbuffer           *local_buffers[__DRI_BUFFER_HIZ + 1];
+#endif
 };
 
 struct dri2_egl_buffer {
@@ -209,7 +224,8 @@ dri2_lookup_egl_image(__DRIscreen *screen, void *image, void *data);
 
 struct dri2_egl_config *
 dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
-		int depth, EGLint surface_type, const EGLint *attr_list);
+		int depth, EGLint surface_type, const EGLint *attr_list,
+		const unsigned int *rgba_masks);
 
 _EGLImage *
 dri2_create_image_khr(_EGLDriver *drv, _EGLDisplay *disp,
@@ -224,6 +240,9 @@ dri2_initialize_drm(_EGLDriver *drv, _EGLDisplay *disp);
 
 EGLBoolean
 dri2_initialize_wayland(_EGLDriver *drv, _EGLDisplay *disp);
+
+EGLBoolean
+dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *disp);
 
 char *
 dri2_get_driver_for_fd(int fd);

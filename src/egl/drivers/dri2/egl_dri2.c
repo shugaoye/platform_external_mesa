@@ -111,13 +111,15 @@ dri2_match_config(const _EGLConfig *conf, const _EGLConfig *criteria)
 
 struct dri2_egl_config *
 dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
-		int depth, EGLint surface_type, const EGLint *attr_list)
+		int depth, EGLint surface_type, const EGLint *attr_list,
+		const unsigned int *rgba_masks)
 {
    struct dri2_egl_config *conf;
    struct dri2_egl_display *dri2_dpy;
    _EGLConfig base;
    unsigned int attrib, value, double_buffer;
    EGLint key, bind_to_texture_rgb, bind_to_texture_rgba;
+   unsigned int dri_masks[4] = { 0, 0, 0, 0 };
    _EGLConfig *matching_config;
    EGLint num_configs = 0;
    EGLint config_id;
@@ -165,6 +167,22 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
 	 double_buffer = value;
 	 break;
 
+      case __DRI_ATTRIB_RED_MASK:
+         dri_masks[0] = value;
+         break;
+
+      case __DRI_ATTRIB_GREEN_MASK:
+         dri_masks[1] = value;
+         break;
+
+      case __DRI_ATTRIB_BLUE_MASK:
+         dri_masks[2] = value;
+         break;
+
+      case __DRI_ATTRIB_ALPHA_MASK:
+         dri_masks[3] = value;
+         break;
+
       default:
 	 key = dri2_to_egl_attribute_map[attrib];
 	 if (key != 0)
@@ -178,6 +196,9 @@ dri2_add_config(_EGLDisplay *disp, const __DRIconfig *dri_config, int id,
          _eglSetConfigKey(&base, attr_list[i], attr_list[i+1]);
 
    if (depth > 0 && depth != base.BufferSize)
+      return NULL;
+
+   if (rgba_masks && memcmp(rgba_masks, dri_masks, sizeof(dri_masks)))
       return NULL;
 
    base.NativeRenderable = EGL_TRUE;
@@ -561,6 +582,12 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
       return dri2_initialize_wayland(drv, disp);
 #endif
 #endif
+#ifdef HAVE_ANDROID_PLATFORM
+   case _EGL_PLATFORM_ANDROID:
+      if (disp->Options.TestOnly)
+         return EGL_TRUE;
+      return dri2_initialize_android(drv, disp);
+#endif
 
    default:
       return EGL_FALSE;
@@ -582,8 +609,15 @@ dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
       dri2_dpy->core->destroyScreen(dri2_dpy->dri_screen);
    if (dri2_dpy->fd)
       close(dri2_dpy->fd);
+#ifdef ANDROID
+   /*
+    * _mesa_destroy_shader_compiler is called at atexit() time.  We can not
+    * unload the driver now.
+    */
+#else
    if (dri2_dpy->driver)
       dlclose(dri2_dpy->driver);
+#endif
 
    if (disp->PlatformDisplay == NULL) {
       switch (disp->Platform) {
@@ -1058,6 +1092,93 @@ dri2_create_image_wayland_wl_buffer(_EGLDisplay *disp, _EGLContext *ctx,
 }
 #endif
 
+#ifdef HAVE_ANDROID_PLATFORM
+
+#include <gralloc_drm_handle.h>
+static int
+get_native_buffer_name(struct android_native_buffer_t *buf)
+{
+   struct gralloc_drm_handle_t *handle;
+
+   handle = gralloc_drm_handle(buf->handle);
+
+   return (handle) ? handle->name : 0;
+}
+
+
+static _EGLImage *
+dri2_create_image_android_native_buffer(_EGLDisplay *disp,
+                                        EGLClientBuffer buffer)
+{
+   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
+   struct android_native_buffer_t *buf =
+      (struct android_native_buffer_t *) buffer;
+   struct dri2_egl_image *dri2_img;
+   EGLint format, name;
+
+   if (!buf || buf->common.magic != ANDROID_NATIVE_BUFFER_MAGIC ||
+       buf->common.version != sizeof(*buf)) {
+      _eglError(EGL_BAD_PARAMETER, "eglCreateEGLImageKHR");
+      return NULL;
+   }
+
+   name = get_native_buffer_name(buf);
+   if (!name) {
+      _eglError(EGL_BAD_PARAMETER, "eglCreateEGLImageKHR");
+      return NULL;
+   }
+
+   switch (buf->format) {
+   case HAL_PIXEL_FORMAT_BGRA_8888:
+      format = __DRI_IMAGE_FORMAT_ARGB8888;
+      break;
+   case HAL_PIXEL_FORMAT_RGB_565:
+      format = __DRI_IMAGE_FORMAT_RGB565;
+      break;
+   case HAL_PIXEL_FORMAT_RGBA_8888:
+      format = __DRI_IMAGE_FORMAT_RGBA8888_REV;
+      break;
+   case HAL_PIXEL_FORMAT_RGBX_8888:
+   case HAL_PIXEL_FORMAT_RGB_888:
+   case HAL_PIXEL_FORMAT_RGBA_5551:
+   case HAL_PIXEL_FORMAT_RGBA_4444:
+      /* unsupported */
+   default:
+      _eglLog(_EGL_WARNING, "unsupported native buffer format 0x%x", buf->format);
+      return NULL;
+      break;
+   }
+
+   dri2_img = calloc(1, sizeof(*dri2_img));
+   if (!dri2_img) {
+      _eglError(EGL_BAD_ALLOC, "droid_create_image_mesa_drm");
+      return NULL;
+   }
+
+   if (!_eglInitImage(&dri2_img->base, disp)) {
+      free(dri2_img);
+      return NULL;
+   }
+
+   dri2_img->dri_image =
+      dri2_dpy->image->createImageFromName(dri2_dpy->dri_screen,
+					   buf->width,
+					   buf->height,
+					   format,
+					   name,
+					   buf->stride,
+					   dri2_img);
+   if (!dri2_img->dri_image) {
+      free(dri2_img);
+      _eglError(EGL_BAD_ALLOC, "droid_create_image_mesa_drm");
+      return NULL;
+   }
+
+   return &dri2_img->base;
+}
+
+#endif /* HAVE_ANDROID_PLATFORM */
+
 _EGLImage *
 dri2_create_image_khr(_EGLDriver *drv, _EGLDisplay *disp,
 		      _EGLContext *ctx, EGLenum target,
@@ -1073,6 +1194,10 @@ dri2_create_image_khr(_EGLDriver *drv, _EGLDisplay *disp,
 #ifdef HAVE_WAYLAND_PLATFORM
    case EGL_WAYLAND_BUFFER_WL:
       return dri2_create_image_wayland_wl_buffer(disp, ctx, buffer, attr_list);
+#endif
+#ifdef HAVE_ANDROID_PLATFORM
+   case EGL_NATIVE_BUFFER_ANDROID:
+      return dri2_create_image_android_native_buffer(disp, buffer);
 #endif
    default:
       _eglError(EGL_BAD_PARAMETER, "dri2_create_image_khr");
@@ -1293,12 +1418,39 @@ dri2_unload(_EGLDriver *drv)
    free(dri2_drv);
 }
 
+#ifdef HAVE_ANDROID_PLATFORM
+static void
+android_log(EGLint level, const char *msg)
+{
+   switch (level) {
+   case _EGL_DEBUG:
+      LOGD(msg);
+      break;
+   case _EGL_INFO:
+      LOGI(msg);
+      break;
+   case _EGL_WARNING:
+      LOGW(msg);
+      break;
+   case _EGL_FATAL:
+      LOG_FATAL(msg);
+      break;
+   default:
+      break;
+   }
+}
+#endif
+
 static EGLBoolean
 dri2_load(_EGLDriver *drv)
 {
    struct dri2_egl_driver *dri2_drv = dri2_egl_driver(drv);
 #ifdef HAVE_SHARED_GLAPI
+#ifdef HAVE_ANDROID_PLATFORM
+   const char *libname = "libglapi.so";
+#else
    const char *libname = "libglapi.so.0";
+#endif
 #else
    /*
     * Both libGL.so and libglapi.so are glapi providers.  There is no way to
@@ -1353,6 +1505,10 @@ _EGL_MAIN(const char *args)
 
    if (!dri2_load(&dri2_drv->base))
       return NULL;
+
+#ifdef HAVE_ANDROID_PLATFORM
+   _eglSetLogProc(android_log);
+#endif
 
    _eglInitDriverFallbacks(&dri2_drv->base);
    dri2_drv->base.API.Initialize = dri2_initialize;
