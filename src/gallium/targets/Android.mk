@@ -86,7 +86,7 @@ endif
 ifneq ($(filter r600g, $(MESA_GPU_DRIVERS)),)
 gallium_DRIVERS += libmesa_pipe_r600 libmesa_winsys_r600
 LOCAL_CFLAGS += -D_EGL_PIPE_R600=1
-LOCAL_SHARED_LIBRARIES += libdrm libdrm_radeon
+LOCAL_SHARED_LIBRARIES += libdrm
 endif
 
 ifneq ($(filter nouveau, $(MESA_GPU_DRIVERS)),)
