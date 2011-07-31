@@ -192,28 +192,19 @@ android_is_displaytarget_format_supported(struct sw_winsys *ws,
 
    switch (format) {
    case PIPE_FORMAT_R8G8B8A8_UNORM:
-      fmt = PIXEL_FORMAT_RGBA_8888;
+      fmt = HAL_PIXEL_FORMAT_RGBA_8888;
       break;
    case PIPE_FORMAT_R8G8B8X8_UNORM:
-      fmt = PIXEL_FORMAT_RGBX_8888;
+      fmt = HAL_PIXEL_FORMAT_RGBX_8888;
       break;
    case PIPE_FORMAT_R8G8B8_UNORM:
-      fmt = PIXEL_FORMAT_RGB_888;
+      fmt = HAL_PIXEL_FORMAT_RGB_888;
       break;
    case PIPE_FORMAT_B5G6R5_UNORM:
-      fmt = PIXEL_FORMAT_RGB_565;
+      fmt = HAL_PIXEL_FORMAT_RGB_565;
       break;
    case PIPE_FORMAT_B8G8R8A8_UNORM:
-      fmt = PIXEL_FORMAT_BGRA_8888;
-      break;
-   case PIPE_FORMAT_A8_UNORM:
-      fmt = PIXEL_FORMAT_A_8;
-      break;
-   case PIPE_FORMAT_L8_UNORM:
-      fmt = PIXEL_FORMAT_L_8;
-      break;
-   case PIPE_FORMAT_L8A8_UNORM:
-      fmt = PIXEL_FORMAT_LA_88;
+      fmt = HAL_PIXEL_FORMAT_BGRA_8888;
       break;
    default:
       fmt = PIXEL_FORMAT_NONE;
