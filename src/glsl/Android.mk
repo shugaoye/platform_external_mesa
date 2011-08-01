@@ -138,3 +138,22 @@ LOCAL_IS_HOST_MODULE := true
 include $(LOCAL_PATH)/Android.gen.mk
 include $(MESA_COMMON_MK)
 include $(BUILD_HOST_EXECUTABLE)
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := \
+	builtin_stubs.cpp \
+	main.cpp \
+	../mesa/program/hash_table.c \
+	../mesa/program/symbol_table.c
+
+LOCAL_C_INCLUDES := \
+	$(MESA_TOP)/src/mapi \
+	$(MESA_TOP)/src/mesa
+
+LOCAL_STATIC_LIBRARIES := libmesa_glsl
+
+LOCAL_MODULE := glsl_compiler
+
+include $(MESA_COMMON_MK)
+include $(BUILD_EXECUTABLE)
