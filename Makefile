@@ -183,7 +183,7 @@ ultrix-gcc:
 
 # Rules for making release tarballs
 
-VERSION=7.11-rc2
+VERSION=7.11
 DIRECTORY = Mesa-$(VERSION)
 LIB_NAME = MesaLib-$(VERSION)
 GLUT_NAME = MesaGLUT-$(VERSION)
@@ -285,9 +285,6 @@ MAIN_FILES = \
 	$(DIRECTORY)/src/mesa/drivers/osmesa/descrip.mms		\
 	$(DIRECTORY)/src/mesa/drivers/osmesa/osmesa.def			\
 	$(DIRECTORY)/src/mesa/drivers/osmesa/*.[ch]			\
-	$(DIRECTORY)/src/mesa/drivers/dri/r300/compiler/*.[ch]		\
-	$(DIRECTORY)/src/mesa/drivers/dri/r300/compiler/Makefile	\
-	$(DIRECTORY)/src/mesa/drivers/dri/r300/compiler/SConscript	\
 	$(DIRECTORY)/src/mesa/drivers/windows/*/*.[ch]			\
 	$(DIRECTORY)/src/mesa/drivers/windows/*/*.def			\
 	$(DIRECTORY)/src/mesa/drivers/x11/Makefile			\
@@ -393,6 +390,7 @@ DRI_FILES = \
 	$(DIRECTORY)/src/mesa/drivers/dri/*/*/*.[chS]			\
 	$(DIRECTORY)/src/mesa/drivers/dri/*/Makefile			\
 	$(DIRECTORY)/src/mesa/drivers/dri/*/*/Makefile			\
+	$(DIRECTORY)/src/mesa/drivers/dri/*/*/SConscript		\
 	$(DIRECTORY)/src/mesa/drivers/dri/*/Doxyfile
 
 SGI_GLU_FILES = \
@@ -481,13 +479,13 @@ rm_config: parsers
 	rm -f configs/autoconf
 
 $(LIB_NAME).tar: rm_config
-	cd .. ; tar -cf $(DIRECTORY)/$(LIB_NAME).tar $(LIB_FILES)
+	cd .. ; tar --dereference -cf $(DIRECTORY)/$(LIB_NAME).tar $(LIB_FILES)
 
 $(LIB_NAME).tar.gz: $(LIB_NAME).tar
 	gzip --stdout --best $(LIB_NAME).tar > $(LIB_NAME).tar.gz
 
 $(GLUT_NAME).tar:
-	cd .. ; tar -cf $(DIRECTORY)/$(GLUT_NAME).tar $(GLUT_FILES)
+	cd .. ; tar --dereference -cf $(DIRECTORY)/$(GLUT_NAME).tar $(GLUT_FILES)
 
 $(GLUT_NAME).tar.gz: $(GLUT_NAME).tar
 	gzip --stdout --best $(GLUT_NAME).tar > $(GLUT_NAME).tar.gz

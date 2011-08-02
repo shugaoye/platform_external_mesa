@@ -136,6 +136,7 @@ struct intel_context
                                struct intel_region * draw_regions[],
                                struct intel_region * depth_region,
 			       GLuint num_regions);
+      void (*update_draw_buffer)(struct intel_context *intel);
 
       void (*reduced_primitive_state) (struct intel_context * intel,
                                        GLenum rprim);
@@ -229,7 +230,6 @@ struct intel_context
    GLuint coloroffset;
    GLuint specoffset;
    GLuint wpos_offset;
-   GLuint wpos_size;
 
    struct tnl_attr_map vertex_attrs[VERT_ATTRIB_MAX];
    GLuint vertex_attr_count;

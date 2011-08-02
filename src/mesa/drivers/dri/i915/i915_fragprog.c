@@ -1342,11 +1342,10 @@ i915ValidateFragmentProgram(struct i915_context *i915)
 
    intel->vertex_attr_count = 0;
    intel->wpos_offset = 0;
-   intel->wpos_size = 0;
    intel->coloroffset = 0;
    intel->specoffset = 0;
 
-   if (inputsRead & FRAG_BITS_TEX_ANY) {
+   if (inputsRead & FRAG_BITS_TEX_ANY || p->wpos_tex != -1) {
       EMIT_ATTR(_TNL_ATTRIB_POS, EMIT_4F_VIEWPORT, S4_VFMT_XYZW, 16);
    }
    else {
@@ -1385,17 +1384,15 @@ i915ValidateFragmentProgram(struct i915_context *i915)
          EMIT_ATTR(_TNL_ATTRIB_GENERIC0 + i, EMIT_SZ(sz), 0, sz * 4);
       }
       else if (i == p->wpos_tex) {
-
+	 int wpos_size = 4 * sizeof(float);
          /* If WPOS is required, duplicate the XYZ position data in an
           * unused texture coordinate:
           */
          s2 &= ~S2_TEXCOORD_FMT(i, S2_TEXCOORD_FMT0_MASK);
-         s2 |= S2_TEXCOORD_FMT(i, SZ_TO_HW(3));
+         s2 |= S2_TEXCOORD_FMT(i, SZ_TO_HW(wpos_size));
 
          intel->wpos_offset = offset;
-         intel->wpos_size = 3 * sizeof(GLuint);
-
-         EMIT_PAD(intel->wpos_size);
+         EMIT_PAD(wpos_size);
       }
    }
 
