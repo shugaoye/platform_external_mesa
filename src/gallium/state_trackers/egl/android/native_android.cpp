@@ -27,6 +27,7 @@
 #define LOG_TAG "MESA-EGL"
 #include <cutils/log.h>
 #include <cutils/properties.h>
+#include <utils/Errors.h>
 #include <hardware/hardware.h>
 #include <ui/android_native_buffer.h>
 
