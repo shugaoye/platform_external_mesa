@@ -124,13 +124,13 @@ LOCAL_SRC_FILES := \
 	$(C_SOURCES) \
 	$(CXX_SOURCES) \
 	builtin_stubs.cpp \
-	main.cpp \
-	../mesa/program/hash_table.c \
-	../mesa/program/symbol_table.c
+	main.cpp
 
 LOCAL_C_INCLUDES := \
 	$(MESA_TOP)/src/mapi \
 	$(MESA_TOP)/src/mesa
+
+LOCAL_STATIC_LIBRARIES := libmesa_glsl_utils
 
 LOCAL_MODULE := builtin_compiler
 
@@ -144,15 +144,13 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
 	builtin_stubs.cpp \
-	main.cpp \
-	../mesa/program/hash_table.c \
-	../mesa/program/symbol_table.c
+	main.cpp
 
 LOCAL_C_INCLUDES := \
 	$(MESA_TOP)/src/mapi \
 	$(MESA_TOP)/src/mesa
 
-LOCAL_STATIC_LIBRARIES := libmesa_glsl
+LOCAL_STATIC_LIBRARIES := libmesa_glsl libmesa_glsl_utils
 
 LOCAL_MODULE := glsl_compiler
 

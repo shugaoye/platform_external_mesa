@@ -220,7 +220,7 @@ common_C_INCLUDES := \
 common_STATIC_LIBRARIES := \
 	libmesa_classic_mesa \
 	libmesa_glsl \
-	libmesa_classic_mesa
+	libmesa_glsl_utils
 
 common_SHARED_LIBRARIES := \
 	libglapi \

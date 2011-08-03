@@ -84,4 +84,26 @@ include $(MESA_COMMON_MK)
 include $(BUILD_STATIC_LIBRARY)
 endif # MESA_BUILD_CLASSIC
 
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := \
+	program/hash_table.c \
+	program/symbol_table.c
+
+LOCAL_MODULE := libmesa_glsl_utils
+
+include $(MESA_COMMON_MK)
+include $(BUILD_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := \
+	program/hash_table.c \
+	program/symbol_table.c
+
+LOCAL_MODULE := libmesa_glsl_utils
+
+include $(MESA_COMMON_MK)
+include $(BUILD_HOST_STATIC_LIBRARY)
+
 -include $(SUBDIRS)

@@ -37,6 +37,8 @@
 #   libmesa_egl
 #   libmesa_st_egl
 #   libmesa_st_mesa
+#   libmesa_glsl
+#   libmesa_glsl_utils
 #   libmesa_pipe_<DRIVER>
 #   libmesa_winsys_<DRIVER>
 #   libmesa_gallium
@@ -47,6 +49,7 @@
 #
 #   libmesa_classic_mesa
 #   libmesa_glsl
+#   libmesa_glsl_utils
 #   <driver-specific objects>
 
 LOCAL_PATH := $(call my-dir)

@@ -127,12 +127,21 @@ LOCAL_STATIC_LIBRARIES += \
 	libLLVMCore libLLVMSupport libLLVMSystem
 endif # GALLIUM_LLVM_VERSION
 
+#
+# Notes about the order here:
+#
+#  * libmesa_st_egl depends on libmesa_winsys_sw in $(gallium_DRIVERS)
+#  * libmesa_r300compiler in $(gallium_DRIVERS) depends on libmesa_st_mesa and
+#    libmesa_glsl
+#  * libmesa_st_mesa depends on libmesa_glsl
+#  * libmesa_glsl depends on libmesa_glsl_utils
+#
 LOCAL_STATIC_LIBRARIES := \
 	libmesa_st_egl \
+	$(gallium_DRIVERS) \
 	libmesa_st_mesa \
 	libmesa_glsl \
-	libmesa_st_mesa \
-	$(gallium_DRIVERS) \
+	libmesa_glsl_utils \
 	$(LOCAL_STATIC_LIBRARIES)
 
 endif # MESA_BUILD_GALLIUM
