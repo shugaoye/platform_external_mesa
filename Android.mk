@@ -24,7 +24,7 @@
 
 # BOARD_GPU_DRIVERS should be defined.  The valid values are
 #
-#   classic drivers: i915c, i965c
+#   classic drivers: i915, i965
 #   gallium drivers: i915g, r300g, r600g, nouveau, vmwgfx
 #
 # The main target is libGLES_mesa.  Classic drivers depend on
@@ -69,10 +69,10 @@ MESA_GPU_DRIVERS := $(BOARD_GPU_DRIVERS)
 # convert board uses to MESA_GPU_DRIVERS
 ifeq ($(strip $(MESA_GPU_DRIVERS)),)
 ifeq ($(strip $(BOARD_USES_I915C)),true)
-MESA_GPU_DRIVERS += i915c
+MESA_GPU_DRIVERS += i915
 endif
 ifeq ($(strip $(BOARD_USES_I965C)),true)
-MESA_GPU_DRIVERS += i965c
+MESA_GPU_DRIVERS += i965
 endif
 ifeq ($(strip $(BOARD_USES_I915G)),true)
 MESA_GPU_DRIVERS += i915g
@@ -91,7 +91,7 @@ MESA_GPU_DRIVERS += vmwgfx
 endif
 endif # MESA_GPU_DRIVERS
 
-classic_drivers := i915c i965c
+classic_drivers := i915 i965
 gallium_drivers := i915g r300g r600g nouveau vmwgfx
 
 # warn about invalid drivers
