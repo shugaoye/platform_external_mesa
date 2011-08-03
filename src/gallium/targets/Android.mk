@@ -43,7 +43,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libcutils
 
 ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
-LOCAL_STATIC_LIBRARIES += libmesa_classic_egl
+LOCAL_STATIC_LIBRARIES += libmesa_egl_dri2
 LOCAL_SHARED_LIBRARIES += libdrm
 endif
 

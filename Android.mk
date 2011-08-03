@@ -30,7 +30,7 @@
 # The main target is libGLES_mesa.  Classic drivers depend on
 #
 #   libmesa_egl
-#   libmesa_classic_egl
+#   libmesa_egl_dri2
 #
 # Gallium drivers depend on
 #

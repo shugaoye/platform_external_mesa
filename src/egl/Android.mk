@@ -88,7 +88,7 @@ LOCAL_C_INCLUDES := \
 	$(DRM_TOP) \
 	$(DRM_TOP)/include/drm
 
-LOCAL_MODULE := libmesa_classic_egl
+LOCAL_MODULE := libmesa_egl_dri2
 
 include $(MESA_COMMON_MK)
 include $(BUILD_STATIC_LIBRARY)
