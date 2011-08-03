@@ -78,7 +78,7 @@ LOCAL_SHARED_LIBRARIES += libdrm libdrm_intel
 endif
 
 ifneq ($(filter r300g, $(MESA_GPU_DRIVERS)),)
-gallium_DRIVERS += libmesa_pipe_r300 libmesa_winsys_r300 libmesa_r300compiler
+gallium_DRIVERS += libmesa_pipe_r300 libmesa_winsys_r300
 LOCAL_CFLAGS += -D_EGL_PIPE_R300=1
 LOCAL_SHARED_LIBRARIES += libdrm
 endif
@@ -131,7 +131,7 @@ endif # GALLIUM_LLVM_VERSION
 # Notes about the order here:
 #
 #  * libmesa_st_egl depends on libmesa_winsys_sw in $(gallium_DRIVERS)
-#  * libmesa_r300compiler in $(gallium_DRIVERS) depends on libmesa_st_mesa and
+#  * libmesa_pipe_r300 in $(gallium_DRIVERS) depends on libmesa_st_mesa and
 #    libmesa_glsl
 #  * libmesa_st_mesa depends on libmesa_glsl
 #  * libmesa_glsl depends on libmesa_glsl_utils

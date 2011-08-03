@@ -30,9 +30,6 @@ SUBDIRS :=
 ifeq ($(strip $(MESA_BUILD_CLASSIC)),true)
 SUBDIRS += $(LOCAL_PATH)/drivers/Android.mk
 endif
-ifneq ($(filter r300g, $(MESA_GPU_DRIVERS)),)
-SUBDIRS += $(LOCAL_PATH)/drivers/dri/r300/compiler/Android.mk
-endif
 
 include $(LOCAL_PATH)/sources.mak
 

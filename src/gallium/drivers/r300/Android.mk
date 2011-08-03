@@ -24,7 +24,7 @@
 
 LOCAL_PATH := $(call my-dir)
 
-# from Makefile
+# from Makefile, omitting the last two files
 C_SOURCES = \
 	r300_blit.c \
 	r300_chipset.c \
@@ -48,7 +48,40 @@ C_SOURCES = \
 	r300_texture.c \
 	r300_texture_desc.c \
 	r300_tgsi_to_rc.c \
-	r300_transfer.c
+	r300_transfer.c \
+	\
+	compiler/radeon_code.c \
+	compiler/radeon_compiler.c \
+	compiler/radeon_compiler_util.c \
+	compiler/radeon_emulate_branches.c \
+	compiler/radeon_emulate_loops.c \
+	compiler/radeon_program.c \
+	compiler/radeon_program_print.c \
+	compiler/radeon_opcodes.c \
+	compiler/radeon_program_alu.c \
+	compiler/radeon_program_pair.c \
+	compiler/radeon_program_tex.c \
+	compiler/radeon_pair_translate.c \
+	compiler/radeon_pair_schedule.c \
+	compiler/radeon_pair_regalloc.c \
+	compiler/radeon_pair_dead_sources.c \
+	compiler/radeon_dataflow.c \
+	compiler/radeon_dataflow_deadcode.c \
+	compiler/radeon_dataflow_swizzles.c \
+	compiler/radeon_list.c \
+	compiler/radeon_optimize.c \
+	compiler/radeon_remove_constants.c \
+	compiler/radeon_rename_regs.c \
+	compiler/radeon_variable.c \
+	compiler/r3xx_fragprog.c \
+	compiler/r300_fragprog.c \
+	compiler/r300_fragprog_swizzle.c \
+	compiler/r300_fragprog_emit.c \
+	compiler/r500_fragprog.c \
+	compiler/r500_fragprog_emit.c \
+	compiler/r3xx_vertprog.c \
+	compiler/r3xx_vertprog_dump.c \
+	compiler/memory_pool.c
 
 include $(CLEAR_VARS)
 
@@ -58,7 +91,9 @@ LOCAL_SRC_FILES := \
 LOCAL_CFLAGS := -std=c99
 
 LOCAL_C_INCLUDES := \
-	$(MESA_TOP)/src/mesa/drivers/dri/r300/compiler \
+	$(MESA_TOP)/src/mapi \
+	$(MESA_TOP)/src/glsl \
+	$(MESA_TOP)/src/mesa \
 	$(DRM_TOP) \
 	$(DRM_TOP)/include/drm
 
