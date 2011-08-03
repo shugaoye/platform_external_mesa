@@ -77,7 +77,7 @@ LOCAL_SRC_FILES := \
 LOCAL_CFLAGS := $(common_CFLAGS) -DFEATURE_GL=1
 LOCAL_C_INCLUDES := $(common_C_INCLUDES)
 
-LOCAL_MODULE := libmesa_classic_mesa
+LOCAL_MODULE := libmesa_dricore
 
 include $(LOCAL_PATH)/Android.gen.mk
 include $(MESA_COMMON_MK)

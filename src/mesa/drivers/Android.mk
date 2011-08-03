@@ -218,7 +218,7 @@ common_C_INCLUDES := \
 	external/expat/lib
 
 common_STATIC_LIBRARIES := \
-	libmesa_classic_mesa \
+	libmesa_dricore \
 	libmesa_glsl \
 	libmesa_glsl_utils
 

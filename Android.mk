@@ -47,7 +47,7 @@
 #
 # For each classic driver enabled, a DRI module will be built.  It consits of
 #
-#   libmesa_classic_mesa
+#   libmesa_dricore
 #   libmesa_glsl
 #   libmesa_glsl_utils
 #   <driver-specific objects>
