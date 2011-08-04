@@ -24,7 +24,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#define LOG_TAG "MESA-EGL"
+#define LOG_TAG "MESA-ST-EGL"
 #include <cutils/log.h>
 #include <cutils/properties.h>
 #include <utils/Errors.h>
@@ -584,7 +584,8 @@ android_display_init_drm(struct native_display *ndpy)
       return TRUE;
    }
    else {
-      LOGE("failed to create DRM screen");
+      LOGW("failed to create DRM screen");
+      LOGW("will fall back to other EGL drivers if any");
       return FALSE;
    }
 }

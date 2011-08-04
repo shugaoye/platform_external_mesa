@@ -49,7 +49,7 @@
 #endif
 
 #ifdef HAVE_ANDROID_PLATFORM
-#define LOG_TAG "MESA-EGL"
+#define LOG_TAG "MESA-EGL-DRI2"
 #include <ui/egl/android_natives.h>
 #include <ui/android_native_buffer.h>
 #include <hardware/hardware.h>
