@@ -532,11 +532,34 @@ droid_open_device(void)
    return (fd >= 0) ? dup(fd) : -1;
 }
 
+static void
+droid_log(EGLint level, const char *msg)
+{
+   switch (level) {
+   case _EGL_DEBUG:
+      LOGD(msg);
+      break;
+   case _EGL_INFO:
+      LOGI(msg);
+      break;
+   case _EGL_WARNING:
+      LOGW(msg);
+      break;
+   case _EGL_FATAL:
+      LOG_FATAL(msg);
+      break;
+   default:
+      break;
+   }
+}
+
 EGLBoolean
 dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *dpy)
 {
    struct dri2_egl_display *dri2_dpy;
    const char *err;
+
+   _eglSetLogProc(droid_log);
 
    dri2_dpy = calloc(1, sizeof(*dri2_dpy));
    if (!dri2_dpy)

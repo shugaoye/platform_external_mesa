@@ -609,7 +609,7 @@ dri2_terminate(_EGLDriver *drv, _EGLDisplay *disp)
       dri2_dpy->core->destroyScreen(dri2_dpy->dri_screen);
    if (dri2_dpy->fd)
       close(dri2_dpy->fd);
-#ifdef ANDROID
+#ifdef HAVE_ANDROID_PLATFORM
    /*
     * _mesa_destroy_shader_compiler is called at atexit() time.  We can not
     * unload the driver now.
@@ -1418,29 +1418,6 @@ dri2_unload(_EGLDriver *drv)
    free(dri2_drv);
 }
 
-#ifdef HAVE_ANDROID_PLATFORM
-static void
-android_log(EGLint level, const char *msg)
-{
-   switch (level) {
-   case _EGL_DEBUG:
-      LOGD(msg);
-      break;
-   case _EGL_INFO:
-      LOGI(msg);
-      break;
-   case _EGL_WARNING:
-      LOGW(msg);
-      break;
-   case _EGL_FATAL:
-      LOG_FATAL(msg);
-      break;
-   default:
-      break;
-   }
-}
-#endif
-
 static EGLBoolean
 dri2_load(_EGLDriver *drv)
 {
@@ -1505,10 +1482,6 @@ _EGL_MAIN(const char *args)
 
    if (!dri2_load(&dri2_drv->base))
       return NULL;
-
-#ifdef HAVE_ANDROID_PLATFORM
-   _eglSetLogProc(android_log);
-#endif
 
    _eglInitDriverFallbacks(&dri2_drv->base);
    dri2_drv->base.API.Initialize = dri2_initialize;
