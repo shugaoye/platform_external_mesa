@@ -791,13 +791,13 @@ android_log(EGLint level, const char *msg)
 {
    switch (level) {
    case _EGL_DEBUG:
-      LOGD(msg);
+      LOGD("%s", msg);
       break;
    case _EGL_INFO:
-      LOGI(msg);
+      LOGI("%s", msg);
       break;
    case _EGL_WARNING:
-      LOGW(msg);
+      LOGW("%s", msg);
       break;
    case _EGL_FATAL:
       LOG_FATAL(msg);
