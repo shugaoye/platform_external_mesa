@@ -89,6 +89,9 @@ gallium_DRIVERS :=
 
 # swrast
 gallium_DRIVERS += libmesa_pipe_softpipe libmesa_winsys_sw_android
+ifeq ($(strip $(MESA_LLVM)),true)
+gallium_DRIVERS += libmesa_pipe_llvmpipe
+endif
 
 # i915g
 ifneq ($(filter i915g, $(MESA_GPU_DRIVERS)),)
@@ -143,6 +146,9 @@ LOCAL_STATIC_LIBRARIES := \
 	$(LOCAL_STATIC_LIBRARIES)
 
 endif # MESA_BUILD_GALLIUM
+
+LOCAL_MODULE_CLASS := SHARED_LIBRARIES
+include $(MESA_LLVM_MK)
 
 LOCAL_MODULE := libGLES_mesa
 LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/egl

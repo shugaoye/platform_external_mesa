@@ -31,7 +31,11 @@
 
 MESA_TOP := $(call my-dir)
 MESA_COMMON_MK := $(MESA_TOP)/Android.common.mk
+MESA_LLVM_MK := $(MESA_TOP)/Android.llvm.mk
 MESA_PYTHON2 := python
+
+# enable or disable the use of LLVM
+MESA_LLVM := false
 
 DRM_TOP := external/drm
 DRM_GRALLOC_TOP := hardware/drm_gralloc
