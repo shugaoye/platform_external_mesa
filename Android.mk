@@ -31,6 +31,7 @@
 
 MESA_TOP := $(call my-dir)
 MESA_COMMON_MK := $(MESA_TOP)/Android.common.mk
+MESA_LLVM_MK := $(MESA_TOP)/Android.llvm.mk
 MESA_PYTHON2 := python
 
 DRM_TOP := external/drm
@@ -68,6 +69,9 @@ MESA_BUILD_GALLIUM := true
 else
 MESA_BUILD_GALLIUM := false
 endif
+
+# set MESA_LLVM
+include $(MESA_LLVM_MK)
 
 ifneq ($(strip $(MESA_GPU_DRIVERS)),)
 
@@ -124,6 +128,9 @@ gallium_DRIVERS :=
 
 # swrast
 gallium_DRIVERS += libmesa_pipe_softpipe libmesa_winsys_sw_android
+ifeq ($(strip $(MESA_LLVM)),true)
+gallium_DRIVERS += libmesa_pipe_llvmpipe
+endif
 
 # i915g
 ifneq ($(filter i915g, $(MESA_GPU_DRIVERS)),)
@@ -181,6 +188,9 @@ endif # MESA_BUILD_GALLIUM
 
 LOCAL_MODULE := libGLES_mesa
 LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/egl
+
+LOCAL_MODULE_CLASS := SHARED_LIBRARIES
+include $(MESA_LLVM_MK)
 
 include $(MESA_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)

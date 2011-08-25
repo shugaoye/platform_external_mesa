@@ -23,7 +23,7 @@
 
 LOCAL_PATH := $(call my-dir)
 
-# get C_SOURCES and GENERATED_SOURCES
+# get source lists
 include $(LOCAL_PATH)/Makefile.sources
 
 include $(CLEAR_VARS)
@@ -50,6 +50,12 @@ $(intermediates)/util/u_half.c: $(intermediates)/%.c: $(LOCAL_PATH)/%.py
 
 $(intermediates)/util/u_format_table.c: $(intermediates)/%.c: $(LOCAL_PATH)/%.py $(LOCAL_PATH)/util/u_format.csv
 	$(transform-generated-source)
+
+ifeq ($(strip $(MESA_LLVM)),true)
+LOCAL_SRC_FILES += $(GALLIVM_SOURCES) $(GALLIVM_CPP_SOURCES)
+endif
+
+include $(MESA_LLVM_MK)
 
 include $(GALLIUM_COMMON_MK)
 include $(BUILD_STATIC_LIBRARY)
