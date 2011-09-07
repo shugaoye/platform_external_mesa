@@ -73,6 +73,7 @@ static const char *es1_extensions[] = {
    "GL_ARB_texture_env_crossbar",
    "GL_ARB_texture_mirrored_repeat",
    "GL_EXT_texture_lod_bias",
+   "GL_ARB_texture_non_power_of_two",
 
    NULL
 };

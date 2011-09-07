@@ -263,6 +263,7 @@ static const struct extension extension_table[] = {
    { "GL_AMD_shader_stencil_export",               o(ARB_shader_stencil_export),               GL,             2009 },
    { "GL_APPLE_object_purgeable",                  o(APPLE_object_purgeable),                  GL,             2006 },
    { "GL_APPLE_packed_pixels",                     o(APPLE_packed_pixels),                     GL,             2002 },
+   { "GL_APPLE_texture_2D_limited_npot",           o(ARB_texture_non_power_of_two),                 ES1,       2011 },
    { "GL_APPLE_vertex_array_object",               o(APPLE_vertex_array_object),               GL,             2002 },
    { "GL_ATI_blend_equation_separate",             o(EXT_blend_equation_separate),             GL,             2003 },
    { "GL_ATI_draw_buffers",                        o(dummy_true),                              GL,             2002 },
