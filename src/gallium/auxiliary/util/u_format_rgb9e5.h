@@ -27,7 +27,6 @@
 #define RGB9E5_H
 
 #include <math.h>
-#include <assert.h>
 
 #define RGB9E5_EXPONENT_BITS          5
 #define RGB9E5_MANTISSA_BITS          9
