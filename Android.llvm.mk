@@ -12,25 +12,17 @@ endif
 ifeq ($(strip $(MESA_LLVM)),true)
 
 LLVM_TOP := external/llvm
-LLVM_VERSION := 0x0209
+LLVM_VERSION := 0x0208
 
 ifeq ($(strip $(LOCAL_MODULE_CLASS)),STATIC_LIBRARIES)
-LOCAL_C_INCLUDES += \
-	bionic \
-	external/stlport/stlport \
-	$(LLVM_TOP)/include
-LOCAL_CFLAGS += \
-	-D__STDC_LIMIT_MACROS \
-	-D__STDC_CONSTANT_MACROS \
-	-DHAVE_LLVM=$(LLVM_VERSION)
+include $(LLVM_TOP)/Android.common.mk
+LOCAL_CFLAGS += -DHAVE_LLVM=$(LLVM_VERSION)
 endif # STATIC_LIBRARIES
 
 ifeq ($(strip $(LOCAL_MODULE_CLASS)),SHARED_LIBRARIES)
 LOCAL_SHARED_LIBRARIES += libstlport
 
 LOCAL_STATIC_LIBRARIES += \
-	libLLVMObject \
-	libLLVMMCJIT \
 	libLLVMMCDisassembler \
 	libLLVMLinker \
 	libLLVMipo \
@@ -46,7 +38,6 @@ LOCAL_STATIC_LIBRARIES += \
 	libLLVMX86AsmParser \
 	libLLVMX86CodeGen \
 	libLLVMX86AsmPrinter \
-	libLLVMX86Utils \
 	libLLVMX86Info
 endif # x86
 
@@ -64,9 +55,10 @@ LOCAL_STATIC_LIBRARIES += \
 	libLLVMipa \
 	libLLVMAnalysis \
 	libLLVMTarget \
-	libLLVMCore \
 	libLLVMMC \
-	libLLVMSupport
+	libLLVMCore \
+	libLLVMSupport \
+	libLLVMSystem
 endif # SHARED_LIBRARIES
 
 endif # MESA_LLVM
