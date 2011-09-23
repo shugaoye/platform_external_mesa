@@ -28,8 +28,6 @@
 #ifndef vl_vlc_h
 #define vl_vlc_h
 
-#include <assert.h>
-
 #include "pipe/p_compiler.h"
 
 #include "util/u_math.h"
