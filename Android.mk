@@ -35,7 +35,7 @@ MESA_LLVM_MK := $(MESA_TOP)/Android.llvm.mk
 MESA_PYTHON2 := python
 
 # enable or disable the use of LLVM
-MESA_LLVM := false
+MESA_LLVM := true
 
 DRM_TOP := external/drm
 DRM_GRALLOC_TOP := hardware/drm_gralloc

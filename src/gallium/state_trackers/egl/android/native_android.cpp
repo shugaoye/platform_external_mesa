@@ -540,7 +540,8 @@ android_display_create_window_surface(struct native_display *ndpy,
    /* request buffers that are for CPU access */
    if (!adpy->use_drm) {
       native_window_set_usage(asurf->win,
-            GRALLOC_USAGE_SW_READ_OFTEN | GRALLOC_USAGE_SW_WRITE_OFTEN);
+            GRALLOC_USAGE_SW_READ_OFTEN | GRALLOC_USAGE_SW_WRITE_OFTEN |
+            GRALLOC_USAGE_PRIVATE_0);
    }
 
    asurf->base.destroy = android_surface_destroy;
