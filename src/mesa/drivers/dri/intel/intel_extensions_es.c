@@ -45,6 +45,7 @@ static const char *common_extensions[] = {
    /* Optional GLES1 or GLES2 */
 #if FEATURE_OES_EGL_image
    "GL_OES_EGL_image",
+   "GL_OES_EGL_image_external",
 #endif
    "GL_EXT_texture_filter_anisotropic",
    "GL_EXT_packed_depth_stencil",
