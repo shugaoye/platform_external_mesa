@@ -77,6 +77,7 @@ LLVM_ROOT_PATH := external/llvm
 include $(LLVM_ROOT_PATH)/llvm-device-build.mk
 endif
 
+include external/stlport/libstlport.mk
 # this is a shared library
 ifeq ($(strip $(LOCAL_MODULE_CLASS)),SHARED_LIBRARIES)
 LOCAL_SHARED_LIBRARIES += libstlport
