@@ -2359,13 +2359,13 @@ dri2_client_wait_sync(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync,
    unsigned wait_flags = 0;
    EGLint ret = EGL_CONDITION_SATISFIED_KHR;
 
-   if (flags & EGL_SYNC_FLUSH_COMMANDS_BIT_KHR)
+   if (dri2_ctx && flags & EGL_SYNC_FLUSH_COMMANDS_BIT_KHR)
       wait_flags |= __DRI2_FENCE_FLAG_FLUSH_COMMANDS;
 
    /* the sync object should take a reference while waiting */
    dri2_egl_ref_sync(dri2_sync);
 
-   if (dri2_dpy->fence->client_wait_sync(dri2_ctx->dri_context,
+   if (dri2_dpy->fence->client_wait_sync(dri2_ctx ? dri2_ctx->dri_context : NULL,
                                          dri2_sync->fence, wait_flags,
                                          timeout))
       dri2_sync->base.SyncStatus = EGL_SIGNALED_KHR;
